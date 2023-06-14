@@ -7,6 +7,8 @@ async function bootstrap() {
   
   app.useGlobalPipes(new ValidationPipe())
 
+  //app.useGlobalInterceptors(new LogInterceptor()) //vai interceptar todos os controllers da aplicação
+
   await app.listen(3000);
 }
 bootstrap();
