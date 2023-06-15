@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseInterceptors } from "@nestjs/common";
 import { UserDTO } from "./dto/user.dto";
 import { UserUpdatePatchDTO } from "./dto/user-update-patch.dto";
 import { UserService } from "./user.service";
 import { LogInterceptor } from "src/interceptors/log.interceptor";
+import { ParamId } from "src/decorators/param-id.decorator";
 
 @UseInterceptors(LogInterceptor) //aqui irá monitorar todas as rotas
 @Controller('users')
@@ -22,22 +23,22 @@ export class Usercontroller {
     }
 
     @Get(':id')
-    async readOne(@Param('id', ParseIntPipe) id){
+    async readOne(@ParamId() id){ //decorator criado para converter o id para number
         return this.userService.findById(id)
     }
 
     @Patch(':id')
-    async updatePartial(@Body() data: UserUpdatePatchDTO, @Param('id', ParseIntPipe) id){
+    async updatePartial(@Body() data: UserUpdatePatchDTO, @ParamId() id){
         return this.userService.updatePartial(id, data)
     }
 
     @Put(':id')
-    async update(@Body() data: UserDTO, @Param('id', ParseIntPipe) id){
+    async update(@Body() data: UserDTO, @ParamId() id){
         return this.userService.update(id, data)
     }
 
     @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id){
+    async delete(@ParamId() id){
         return this.userService.delete(id)
     }
 
