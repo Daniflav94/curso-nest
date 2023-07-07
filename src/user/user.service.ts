@@ -2,13 +2,15 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { UserDTO } from "./dto/user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UserUpdatePatchDTO } from "./dto/user-update-patch.dto";
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
 
     constructor(private readonly prisma: PrismaService) {}
 
     async create(data: UserDTO) {
+
+        data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())//espera a senha e uma força do hash
         
         return await this.prisma.user.create({ //toda vez que houver apenas o return em função async, não precisa escrever await, pois vem automático
             data,
@@ -39,7 +41,7 @@ export class UserService {
         })
     }
 
-    async updatePartial(id: number, {email, name, password, birthAt}: UserUpdatePatchDTO){
+    async updatePartial(id: number, {email, name, password, birthAt, role}: UserUpdatePatchDTO){
 
         await this.exists(id)
 
@@ -58,7 +60,11 @@ export class UserService {
         }
 
         if(password){
-            data.password = password
+            data.password = await bcrypt.hash(password, await bcrypt.genSalt())
+        }
+
+        if(role){
+            data.role = role
         }
 
         return this.prisma.user.update({
@@ -69,12 +75,14 @@ export class UserService {
         })
     }
 
-    async update(id: number, {email, name, password, birthAt}: UserDTO){
+    async update(id: number, {email, name, password, birthAt, role}: UserDTO){
 
         await this.exists(id)
 
+        password = await bcrypt.hash(password, await bcrypt.genSalt())
+
         return this.prisma.user.update({
-            data: {email, name, password, birthAt: birthAt ? new Date(birthAt) : null},
+            data: {email, name, password, birthAt: birthAt ? new Date(birthAt) : null, role},
             where: {
                 id
             }

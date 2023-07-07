@@ -13,6 +13,7 @@ model User {
   email     String   @db.VarChar(127)
   password  String   @db.VarChar(127)
   birthAt   DateTime? @db.Date //adicionado após bd já ter sido criado, para atualizar rodar o comando npx prisma migrate dev --name AddBirthAt e npx prisma generate
+  role      Int      @default(1)
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @default(now()) @db.Timestamp(0)
 

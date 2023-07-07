@@ -1,10 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseInterceptors, UseGuards } from "@nestjs/common";
 import { UserDTO } from "./dto/user.dto";
 import { UserUpdatePatchDTO } from "./dto/user-update-patch.dto";
 import { UserService } from "./user.service";
 import { LogInterceptor } from "src/interceptors/log.interceptor";
 import { ParamId } from "src/decorators/param-id.decorator";
+import { Roles } from "src/decorators/roles.decorator";
+import { Role } from "src/enums/role.enum";
+import { RoleGuard } from "src/guards/role.guard";
+import { AuthGuard } from "src/guards/auth.guard";
 
+@Roles(Role.Admin) //esse decorator faz com que somente Role.Admin tenha acesso
+@UseGuards(AuthGuard, RoleGuard)
 @UseInterceptors(LogInterceptor) //aqui irá monitorar todas as rotas
 @Controller('users')
 export class Usercontroller {
@@ -17,6 +23,7 @@ export class Usercontroller {
         return this.userService.create(data)
     }
 
+    @Roles(Role.User)
     @Get()
     async list() {
         return this.userService.list()
