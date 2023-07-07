@@ -23,7 +23,7 @@ export class Usercontroller {
         return this.userService.create(data)
     }
 
-    @Roles(Role.User)
+    @Roles(Role.User, Role.Admin)
     @Get()
     async list() {
         return this.userService.list()
